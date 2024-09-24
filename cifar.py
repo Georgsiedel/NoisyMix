@@ -24,7 +24,7 @@ from aug_utils import *
 
 parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
-parser.add_argument('--arch', '-m', type=str, default='preactresnet18',
+parser.add_argument('--arch', '-m', type=str, default='wideresnet28',
     choices=['preactresnet18', 'preactwideresnet18', 'wideresnet28'], help='Choose architecture.')
 parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 0)')
 
@@ -46,11 +46,11 @@ parser.add_argument('--jsd', type=int, default=1, metavar='S', help='JSD consist
 parser.add_argument('--all-ops', '-all', action='store_true', help='Turn on all operations (+brightness,contrast,color,sharpness).')
 
 # Noisy Feature Mixup options
-parser.add_argument('--alpha', type=float, default=0.0, metavar='S', help='for mixup')
-parser.add_argument('--manifold_mixup', type=int, default=0, metavar='S', help='manifold mixup (default: 0)')
-parser.add_argument('--add_noise_level', type=float, default=0.0, metavar='S', help='level of additive noise')
-parser.add_argument('--mult_noise_level', type=float, default=0.0, metavar='S', help='level of multiplicative noise')
-parser.add_argument('--sparse_level', type=float, default=0.0, metavar='S', help='sparse noise')
+parser.add_argument('--alpha', type=float, default=1.0, metavar='S', help='for mixup')
+parser.add_argument('--manifold_mixup', type=int, default=1, metavar='S', help='manifold mixup (default: 0)')
+parser.add_argument('--add_noise_level', type=float, default=0.5, metavar='S', help='level of additive noise')
+parser.add_argument('--mult_noise_level', type=float, default=0.5, metavar='S', help='level of multiplicative noise')
+parser.add_argument('--sparse_level', type=float, default=0.65, metavar='S', help='sparse noise')
 
 args = parser.parse_args()
 
@@ -76,7 +76,8 @@ def train(net, train_loader, optimizer, scheduler):
                                                       manifold_mixup=args.manifold_mixup,
                                                       add_noise_level=args.add_noise_level,
                                                       mult_noise_level=args.mult_noise_level,
-                                                      sparse_level=args.sparse_level)
+                                                      sparse_level=args.sparse_level,
+                                                      p_norm=False)
         
         if args.alpha>0:
             loss = mixup_criterion(criterion, outputs, targets_a, targets_b, lam)
@@ -185,11 +186,11 @@ def main():
       
       train_loader = torch.utils.data.DataLoader(
               train_data, batch_size=args.train_batch_size,
-              shuffle=True, num_workers=4, pin_memory=True)          
+              shuffle=True, num_workers=2, pin_memory=True)          
     
       test_loader = torch.utils.data.DataLoader(
           test_data, batch_size=args.test_batch_size,
-          shuffle=False, num_workers=4, pin_memory=True)
+          shuffle=False, num_workers=2, pin_memory=True)
     
       # Create model
       if args.arch == 'preactresnet18':
