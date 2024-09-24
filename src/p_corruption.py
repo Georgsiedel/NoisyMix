@@ -115,10 +115,10 @@ def sample_lp_corr_batch(noise_type, epsilon, batch, density_distribution_max, r
             mask.view(-1)[indices] = True
 
             if density_distribution_max == True:
-                random_numbers = torch.randint(2, size=batch.size(), dtype=torch.float16, device=device)
+                random_numbers = torch.randint(2, size=batch.size(), dtype=torch.float16, device=device) * 2 - 1
             else:
                 #random_numbers = torch.cuda.FloatTensor(batch.shape).uniform_(0, 1)
-                random_numbers = torch.rand(batch.shape, device=device, dtype=torch.float16)
+                random_numbers = torch.rand(batch.shape, device=device, dtype=torch.float16) * 2 - 1
             batch_corr = torch.where(mask, random_numbers, batch)
 
             return batch_corr
@@ -147,5 +147,5 @@ def sample_lp_corr_batch(noise_type, epsilon, batch, density_distribution_max, r
             print('Unknown type of noise')
 
     corruption = corruption.to(device)
-    corrupted_batch = torch.clamp(batch + corruption, 0, 1)
+    corrupted_batch = torch.clamp(batch + corruption, -1, 1)
     return corrupted_batch
