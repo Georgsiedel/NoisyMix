@@ -186,11 +186,11 @@ def main():
       
       train_loader = torch.utils.data.DataLoader(
               train_data, batch_size=args.train_batch_size,
-              shuffle=True, num_workers=2, pin_memory=True)          
+              shuffle=True, num_workers=4, pin_memory=True)          
     
       test_loader = torch.utils.data.DataLoader(
           test_data, batch_size=args.test_batch_size,
-          shuffle=False, num_workers=2, pin_memory=True)
+          shuffle=False, num_workers=4, pin_memory=True)
     
       # Create model
       if args.arch == 'preactresnet18':
