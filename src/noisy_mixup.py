@@ -9,13 +9,13 @@ def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
     with torch.cuda.device(0):
         if add_noise_level > 0.0:
             var = torch.var(x)**0.5
-            add_noise = add_noise_level * np.random.beta(2, 5) * torch.Tensor(x.shape, dtype=torch.float16, device=device).normal_()
+            add_noise = add_noise_level * np.random.beta(2, 5) * torch.empty(img.shape, dtype=torch.float16, device=device).normal_()
             #torch.clamp(add_noise, min=-(2*var), max=(2*var), out=add_noise) # clamp
-            sparse = torch.Tensor(x.shape, dtype=torch.float16, device=device).uniform_()
+            sparse = torch.empty(img.shape, dtype=torch.float16, device=device).uniform_()
             add_noise[sparse<sparse_level] = 0
         if mult_noise_level > 0.0:
-            mult_noise = mult_noise_level * np.random.beta(2, 5) * (2*torch.Tensor(x.shape, dtype=torch.float16, device=device).uniform_()-1) + 1 
-            sparse = torch.Tensor(x.shape, dtype=torch.float16, device=device).uniform_()
+            mult_noise = mult_noise_level * np.random.beta(2, 5) * (2*torch.empty(img.shape, dtype=torch.float16, device=device).uniform_()-1) + 1 
+            sparse = torch.empty(img.shape, dtype=torch.float16, device=device).uniform_()
             mult_noise[sparse<sparse_level] = 1.0
 
             
