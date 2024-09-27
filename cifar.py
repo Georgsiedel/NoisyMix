@@ -125,8 +125,6 @@ def train(net, train_loader, optimizer, scheduler):
 
     loss.backward()
     optimizer.step()
-    if args.tpu == 1:
-        xm.mark_step()
     scheduler.step()
     loss_ema = loss_ema * 0.9 + float(loss) * 0.1
   return loss_ema     
@@ -210,10 +208,7 @@ def main():
           weight_decay=args.decay, nesterov=True)
     
       # Distribute model across all visible GPUs
-      if args.tpu == 0:
-          net = torch.nn.DataParallel(net).to(device)
-      elif args.tpu == 1:
-          print('using TPU')
+      net = torch.nn.DataParallel(net).to(device)
       #cudnn.benchmark = True
     
       start_epoch = 0
