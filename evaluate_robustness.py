@@ -19,8 +19,8 @@ def cls_validate(val_loader, model, time_begin=None):
     n = 0
     with torch.no_grad():
         for i, (images, target) in enumerate(val_loader):
-            images = images.cuda(non_blocking=True)
-            target = target.cuda(non_blocking=True)
+            images = images.to(device)(non_blocking=True)
+            target = target.to(device)(non_blocking=True)
             output = model(images)
             model_logits = output[0] if (type(output) is tuple) else output
             pred = model_logits.data.max(1, keepdim=True)[1]
@@ -82,16 +82,16 @@ def get_calibration(data_loader, model, debug=False, n_bins=None):
 
     with torch.no_grad():
         for i, (images, target) in enumerate(data_loader):
-            images = images.cuda(non_blocking=True)
-            target = target.cuda(non_blocking=True)  # TODO: one hot or class number? We want class number
+            images = images.to(device)(non_blocking=True)
+            target = target.to(device)(non_blocking=True)  # TODO: one hot or class number? We want class number
             logits = model(images)
             logits_list.append(logits)
             labels_list.append(target)
 
-    logits = torch.cat(logits_list).cuda()
-    labels = torch.cat(labels_list).cuda()
+    logits = torch.cat(logits_list).to(device)
+    labels = torch.cat(labels_list).to(device)
 
-    ece_criterion = _ECELoss(n_bins=15).cuda()
+    ece_criterion = _ECELoss(n_bins=15).to(device)
     ece = ece_criterion(logits, labels).item()
     #print('ECE (new implementation):', ece * 100)
 
@@ -171,5 +171,10 @@ if __name__ == '__main__':
     test_batch_size = args.batch_size
     os.makedirs('eval_results', exist_ok=True)
     evaluate(args.dir, args.dataset, 'eval_results')
-
+    if tpu == True:
+        import torch_xla
+        import torch_xla.core.xla_model as xm
+        device = xm.xla_device()
+    else:
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
