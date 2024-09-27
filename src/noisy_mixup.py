@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import src.p_corruption as p_corruption
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
     add_noise = 0.0
