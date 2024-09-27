@@ -55,19 +55,26 @@ parser.add_argument('--tpu', type=int, default=0, metavar='S', help='TPU usage K
 
 args = parser.parse_args()
 
+if args.tpu == 1:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    device = xm.xla_device()
+else:
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 def train(net, train_loader, optimizer, scheduler):
   """Train for one epoch."""
   net.train()
   loss_ema = 0.
   
-  criterion = torch.nn.CrossEntropyLoss().cuda()
+  criterion = torch.nn.CrossEntropyLoss().to(device)
   
   for i, (images, targets) in enumerate(train_loader):
     optimizer.zero_grad()
 
     if args.jsd == 0:
-        images = images.cuda()
-        targets = targets.cuda()
+        images = images.to(device)
+        targets = targets.to(device)
       
         if args.alpha == 0.0:   
             outputs = net(images)
@@ -87,8 +94,8 @@ def train(net, train_loader, optimizer, scheduler):
     
     
     elif args.jsd == 1:
-      images_all = torch.cat(images, 0).cuda()
-      targets = targets.cuda()      
+      images_all = torch.cat(images, 0).to(device)
+      targets = targets.to(device)     
       
       if args.alpha == 0.0:   
             logits_all = net(images_all)
@@ -138,7 +145,7 @@ def test(net, test_loader):
       total_correct = 0
       with torch.no_grad():
         for images, targets in test_loader:
-          images, targets = images.cuda(), targets.cuda()
+          images, targets = images.to(device), targets.to(device)
           logits = net(images)
           loss = F.cross_entropy(logits, targets)
           pred = logits.data.max(1)[1]
@@ -210,7 +217,7 @@ def main():
     
       # Distribute model across all visible GPUs
       if args.tpu == 0:
-          net = torch.nn.DataParallel(net).cuda()
+          net = torch.nn.DataParallel(net).to(device)
       elif args.tpu == 1:
           print('using TPU')
       #cudnn.benchmark = True
