@@ -21,8 +21,8 @@ def cls_validate(val_loader, model, time_begin=None):
     n = 0
     with torch.no_grad():
         for i, (images, target) in enumerate(val_loader):
-            images = images.to(device)(non_blocking=True)
-            target = target.to(device)(non_blocking=True)
+            images = images.to(device, non_blocking=True)
+            target = target.to(device, non_blocking=True)
             output = model(images)
             model_logits = output[0] if (type(output) is tuple) else output
             pred = model_logits.data.max(1, keepdim=True)[1]
@@ -84,8 +84,8 @@ def get_calibration(data_loader, model, debug=False, n_bins=None):
 
     with torch.no_grad():
         for i, (images, target) in enumerate(data_loader):
-            images = images.to(device)(non_blocking=True)
-            target = target.to(device)(non_blocking=True)  # TODO: one hot or class number? We want class number
+            images = images.to(device, non_blocking=True)
+            target = target.to(device, non_blocking=True)
             logits = model(images)
             logits_list.append(logits)
             labels_list.append(target)
