@@ -13,6 +13,8 @@ from src.get_data import getData
 from torch import nn
 from torch.nn import functional as F
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 def cls_validate(val_loader, model, time_begin=None):
     model.eval()
     acc1_val = 0
@@ -171,5 +173,3 @@ if __name__ == '__main__':
     test_batch_size = args.batch_size
     os.makedirs('eval_results', exist_ok=True)
     evaluate(args.dir, args.dataset, 'eval_results')
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
