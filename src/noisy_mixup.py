@@ -2,13 +2,6 @@ import numpy as np
 import torch
 import src.p_corruption as p_corruption
 
-if tpu == True:
-    import torch_xla
-    import torch_xla.core.xla_model as xm
-    device = xm.xla_device()
-else:
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
 def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
     add_noise = 0.0
     mult_noise = 1.0
