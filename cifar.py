@@ -51,16 +51,10 @@ parser.add_argument('--manifold_mixup', type=int, default=1, metavar='S', help='
 parser.add_argument('--add_noise_level', type=float, default=0.5, metavar='S', help='level of additive noise')
 parser.add_argument('--mult_noise_level', type=float, default=0.5, metavar='S', help='level of multiplicative noise')
 parser.add_argument('--sparse_level', type=float, default=0.65, metavar='S', help='sparse noise')
-parser.add_argument('--tpu', type=int, default=0, metavar='S', help='TPU usage Kaggle')
 
 args = parser.parse_args()
 
-if args.tpu == 1:
-    import torch_xla
-    import torch_xla.core.xla_model as xm
-    device = xm.xla_device()
-else:
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 def train(net, train_loader, optimizer, scheduler):
   """Train for one epoch."""
