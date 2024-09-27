@@ -22,7 +22,7 @@ NOISE_TYPES = [
     "shot_noise",
     "impulse_noise",
     
-    #"speckle_noise",
+    "speckle_noise",
     
     "defocus_blur",
     "glass_blur",    
@@ -39,9 +39,9 @@ NOISE_TYPES = [
     "pixelate",
     "jpeg_compression",
     
-    #"gaussian_blur",
-    #"saturate",
-    #"spatter",
+    "gaussian_blur",
+    "saturate",
+    "spatter",
 ]
 
 
