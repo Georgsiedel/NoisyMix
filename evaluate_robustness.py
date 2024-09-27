@@ -171,10 +171,5 @@ if __name__ == '__main__':
     test_batch_size = args.batch_size
     os.makedirs('eval_results', exist_ok=True)
     evaluate(args.dir, args.dataset, 'eval_results')
-    if tpu == True:
-        import torch_xla
-        import torch_xla.core.xla_model as xm
-        device = xm.xla_device()
-    else:
-        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
