@@ -209,7 +209,10 @@ def main():
           weight_decay=args.decay, nesterov=True)
     
       # Distribute model across all visible GPUs
-      net = torch.nn.DataParallel(net).cuda()
+      if args.tpu == 0:
+          net = torch.nn.DataParallel(net).cuda()
+      elif args.tpu == 1:
+          print('using TPU')
       #cudnn.benchmark = True
     
       start_epoch = 0
