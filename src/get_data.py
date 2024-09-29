@@ -14,7 +14,7 @@ IMAGENET_TEST_FOLDER = '/scratch/data/imagenet12/val'
 
 # download from https://zenodo.org/record/2535967/files/CIFAR-10-C.tar?download=1
 CIFAR10C_FOLDER = '/kaggle/input/corrupt-data/CIFAR-10-C/'
-CIFAR100C_FOLDER = 'data/CIFAR-100-C/'
+CIFAR100C_FOLDER = '/kaggle/input/cifar100c/CIFAR-100-C'
 
 
 NOISE_TYPES = [
