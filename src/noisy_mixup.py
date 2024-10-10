@@ -29,11 +29,8 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
         x = lam * x + (1 - lam) * x[index]
         if mode == 'patched_standard':
             mask = p_corruption.get_image_mask(x, noise_patch_scale=[list(p_corruption.noise_patch_scale.values())[0], list(p_corruption.noise_patch_scale.values())[1]], ratio=[1.0, 1.0])
-            print('mask done')
             x_noisy = _noise(x, add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
-            print('noise done')
             x = torch.where(mask, x_noisy, x)
-            print('where done')
         elif mode == 'patched_pnorm':
             x = p_corruption.apply_lp_corruption(x, 
                         minibatchsize=8, 
@@ -51,16 +48,11 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
         index = torch.randperm(q).to(device)
     
         for i in range(1,4):
-            print(kk)
             x[kk:kk+q] = lam * x[kk:kk+q] + (1 - lam) * x[kk:kk+q][index]
             if mode == 'patched_standard':
-                print('start if done')
                 mask = p_corruption.get_image_mask(x[kk:kk+q], noise_patch_scale=[list(p_corruption.noise_patch_scale.values())[0], list(p_corruption.noise_patch_scale.values())[1]], ratio=[1.0, 1.0])
-                print('mask done')
                 x_noisy = _noise(x[kk:kk+q], add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
-                print('noise done')
-                x = torch.where(mask, x_noisy, x[kk:kk+q])
-                print('where done')
+                x[kk:kk+q] = torch.where(mask, x_noisy, x[kk:kk+q])
             elif mode == 'patched_pnorm':
                 x[kk:kk+q] = p_corruption.apply_lp_corruption(x[kk:kk+q], 
                         minibatchsize=8, 
