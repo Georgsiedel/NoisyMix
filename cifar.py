@@ -79,7 +79,7 @@ def train(net, train_loader, optimizer, scheduler):
                                                       add_noise_level=args.add_noise_level,
                                                       mult_noise_level=args.mult_noise_level,
                                                       sparse_level=args.sparse_level,
-                                                      mode='standard')
+                                                      mode='patched_standard')
         
         if args.alpha>0:
             loss = mixup_criterion(criterion, outputs, targets_a, targets_b, lam)
@@ -100,7 +100,7 @@ def train(net, train_loader, optimizer, scheduler):
                                                       add_noise_level=args.add_noise_level,
                                                       mult_noise_level=args.mult_noise_level,
                                                       sparse_level=args.sparse_level,
-                                                      mode='standard')
+                                                      mode='patched_standard')
         
       if args.alpha>0:
           logits_clean, logits_aug1, logits_aug2 = torch.split(logits_all, images[0].size(0))
