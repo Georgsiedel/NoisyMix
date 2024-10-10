@@ -75,7 +75,7 @@ class Wide_ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x, targets=None, jsd=0, mixup_alpha=0.0, manifold_mixup=0, 
-                add_noise_level=0.0, mult_noise_level=0.0, sparse_level=1.0, p_norm=False):
+                add_noise_level=0.0, mult_noise_level=0.0, sparse_level=1.0, mode='standard'):
     
         k = 0 if mixup_alpha > 0.0 else -1
         if mixup_alpha > 0.0 and manifold_mixup == True: k = np.random.choice(range(4), 1)[0]
@@ -85,7 +85,7 @@ class Wide_ResNet(nn.Module):
                                               add_noise_level=add_noise_level, 
                                               mult_noise_level=mult_noise_level,
                                               sparse_level=sparse_level,
-                                              p_norm=p_norm)
+                                              mode=mode)
     
         out = self.conv1(x)
 
@@ -96,7 +96,7 @@ class Wide_ResNet(nn.Module):
                                            add_noise_level=add_noise_level, 
                                            mult_noise_level=mult_noise_level,
                                            sparse_level=sparse_level,
-                                           p_norm=False)        
+                                           mode='standard')        
         
 
         out = F.relu(self.bn1(out))
