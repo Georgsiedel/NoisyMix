@@ -112,12 +112,12 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         trainset = datasets.CIFAR10(root='../cifar10', train=True, download=True, transform=transform_train)
@@ -146,12 +146,12 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         trainset = datasets.CIFAR100(root='../cifar100', train=True, download=True, transform=transform_train)
@@ -205,7 +205,7 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         train_loader = None
@@ -227,7 +227,7 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean, std),
+            #transforms.Normalize(mean, std),
         ])
 
         train_loader = None
