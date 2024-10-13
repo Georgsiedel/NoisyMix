@@ -159,7 +159,8 @@ def main():
            transforms.RandomCrop(32, padding=4)])
       preprocess = transforms.Compose(
           [transforms.ToTensor(),
-           #transforms.Normalize([0.5] * 3, [0.5] * 3)])
+           #transforms.Normalize([0.5] * 3, [0.5] * 3)
+          ])
       test_transform = preprocess
     
       if args.augmix == 0:
