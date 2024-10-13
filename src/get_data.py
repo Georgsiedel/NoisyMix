@@ -105,19 +105,19 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
     if name == 'cifar10':
         #mean = [x / 255 for x in [125.3, 123.0, 113.9]]
         #std = [x / 255 for x in [63.0, 62.1, 66.7]]
-        mean = [0.0] * 3
-        std = [1.0] * 3
+        mean = [0.5] * 3
+        std = [0.5] * 3
         
         transform_train = transforms.Compose([
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         trainset = datasets.CIFAR10(root='../cifar10', train=True, download=True, transform=transform_train)
@@ -139,19 +139,19 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
     elif name == 'cifar100':
         #mean = [x / 255 for x in [129.3, 124.1, 112.4]]
         #std = [x / 255 for x in [68.2, 65.4, 70.4]]
-        mean = [0.0] * 3
-        std = [1.0] * 3
+        mean = [0.5] * 3
+        std = [0.5] * 3
                 
         transform_train = transforms.Compose([
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         trainset = datasets.CIFAR100(root='../cifar100', train=True, download=True, transform=transform_train)
@@ -200,12 +200,12 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
                                                   num_workers=32)
 
     elif name == 'cifar10c':
-        mean = [0.0] * 3
-        std = [1.0] * 3
+        mean = [0.5] * 3
+        std = [0.5] * 3
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         train_loader = None
@@ -222,12 +222,12 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
                                                   pin_memory=True)
 
     elif name == 'cifar100c':
-        mean = [0.0] * 3
-        std = [1.0] * 3
+        mean = [0.5] * 3
+        std = [0.5] * 3
 
         transform_test = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(mean, std),
+            transforms.Normalize(mean, std),
         ])
 
         train_loader = None
