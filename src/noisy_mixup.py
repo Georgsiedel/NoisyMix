@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import src.p_corruption as p_corruption
+import torchvision.transforms as transforms
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
@@ -32,7 +33,14 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
             x_noisy = _noise(x, add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
             x = torch.where(mask, x_noisy, x)
         elif mode == 'patched_pnorm':
-            x = p_corruption.apply_lp_corruption(x, 
+            mean = [0.5] * 3
+            std = [0.5] * 3
+            mean = torch.tensor(mean).view(1, 3, 1, 1)  # Shape: (1, 3, 1, 1) to match batch
+            std = torch.tensor(std).view(1, 3, 1, 1)    # Shape: (1, 3, 1, 1)
+
+            denormalized_batch = x * std + mean
+
+            x = p_corruption.apply_lp_corruption(denormalized_batch, 
                         minibatchsize=8, 
                         combine_train_corruptions=True, 
                         corruptions=p_corruption.train_corruptions, 
@@ -40,6 +48,9 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
                         noise_patch_scale=[list(p_corruption.noise_patch_scale.values())[0], list(p_corruption.noise_patch_scale.values())[1]],
                         random_noise_dist=p_corruption.random_noise_dist,
                         factor=1)
+            
+            normalize = transforms.Normalize(mean, std)
+            x = normalize(x)
         else:
             x = _noise(x, add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
     else:
