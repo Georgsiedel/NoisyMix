@@ -12,9 +12,9 @@ import torch.distributions as dist
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 train_corruptions = np.array([
-['uniform-linf', 0.3, False],
-['uniform-l2', 10.0, False],
-['uniform-l0-impulse', 0.24, True],
+['uniform-linf', 0.15, False],
+['uniform-l2', 5.0, False],
+['uniform-l0-impulse', 0.12, True],
 ])
 noise_patch_scale = {'lower': 1.0, 'upper': 1.0}
 random_noise_dist = 'uniform'
