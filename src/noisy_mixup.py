@@ -22,6 +22,25 @@ def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
             
     return mult_noise * x + add_noise      
 
+def normalize_batch(tensor, mean, std):
+    """
+    Normalize a batch of images channel-wise.
+    
+    Args:
+        tensor (torch.Tensor): Batch of images (shape: (batch_size, num_channels, height, width))
+        mean (list or torch.Tensor): Mean for each channel (e.g., [mean_R, mean_G, mean_B])
+        std (list or torch.Tensor): Standard deviation for each channel (e.g., [std_R, std_G, std_B])
+        
+    Returns:
+        torch.Tensor: Normalized batch of images
+    """
+    # Convert mean and std to tensors if they are not already
+    mean = torch.tensor(mean, device=tensor.device).view(1, -1, 1, 1)  # Shape: (1, num_channels, 1, 1)
+    std = torch.tensor(std, device=tensor.device).view(1, -1, 1, 1)    # Shape: (1, num_channels, 1, 1)
+
+    # Normalize the tensor
+    return (tensor - mean) / std
+
 def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0, mode='standard'):
     lam = np.random.beta(alpha, alpha) if alpha > 0.0 else 1.0
     
@@ -36,8 +55,7 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
 
             mean = [-1.0] * 3
             std = [2.0] * 3
-            normalize = transforms.Normalize(mean, std)
-            x = normalize(x)
+            x = normalize_batch(x, mean, std)
 
             x = p_corruption.apply_lp_corruption(x, 
                         minibatchsize=8, 
@@ -49,8 +67,7 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
                         factor=1)
             mean = [0.5] * 3
             std = [0.5] * 3
-            normalize = transforms.Normalize(mean, std)
-            x = normalize(x)
+            x = normalize_batch(x, mean, std)
         else:
             x = _noise(x, add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
     else:
