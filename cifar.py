@@ -203,15 +203,14 @@ def main():
         net = preactwideresnet18(num_classes=num_classes)
       elif args.arch == 'wideresnet28':
           net = wideresnet28(num_classes=num_classes)
-    
-      optimizer = torch.optim.SGD(net.parameters(),
-          args.learning_rate, momentum=args.momentum,
-          weight_decay=args.decay, nesterov=True)
-    
+      
       # Distribute model across all visible GPUs
       net = torch.nn.DataParallel(net).to(device)
       #cudnn.benchmark = True
-    
+      optimizer = torch.optim.SGD(net.parameters(),
+      args.learning_rate, momentum=args.momentum,
+      weight_decay=args.decay, nesterov=True)
+
       start_epoch = 0
     
       scheduler = torch.optim.lr_scheduler.LambdaLR(
@@ -220,6 +219,19 @@ def main():
               step, args.epochs * len(train_loader),
               1,  # lr_lambda computes multiplicative factor
               1e-6 / args.learning_rate))
+      
+      resume = True
+      if resume:
+          DESTINATION_PATH = args.dataset + '_models/'
+          OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+          checkpoint = torch.load(OUT_DIR+'.pt')
+          
+          net.load_state_dict(checkpoint['net_state_dict'])
+          optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+          scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+          start_epoch = checkpoint['epoch'] + 1
+          print(f'resuming from epoch {start_epoch}.')
+    
     
       best_acc = 0
       
@@ -236,7 +248,13 @@ def main():
                   OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
                   if not os.path.isdir(DESTINATION_PATH):
                             os.mkdir(DESTINATION_PATH)
-                  torch.save(net, OUT_DIR+'.pt')            
+                  torch.save({
+                        'epoch': epoch,
+                        'net_state_dict': net.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'scheduler_state_dict': scheduler.state_dict(),
+                    }, OUT_DIR+'.pt')
+                  #torch.save(net, OUT_DIR+'.pt')            
             
                 print(
                     'Epoch {0:3d} | Train Loss {1:.4f} |'
