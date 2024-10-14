@@ -1,0 +1,46 @@
+C10 no patch
+
+96,49 3,51
+92,58 7,42
+92,55 7,45
+
+Test Accuracy:  0.9649
+Calibration:  13.444969058036804
+Distortion: gaussian_noise   | CE (unnormalized) (%): 90.57
+[0.946, 0.9278, 0.8995, 0.8873, 0.868]
+Distortion: shot_noise       | CE (unnormalized) (%): 92.40
+[0.9562, 0.9469, 0.9215, 0.9107, 0.8847]
+Distortion: impulse_noise    | CE (unnormalized) (%): 95.04
+[0.9618, 0.9572, 0.9546, 0.944, 0.9346]
+Distortion: speckle_noise    | CE (unnormalized) (%): 92.84
+[0.9558, 0.943, 0.935, 0.9153, 0.8929]
+Distortion: defocus_blur     | CE (unnormalized) (%): 95.21
+[0.9636, 0.9624, 0.9585, 0.95, 0.9259]
+Distortion: glass_blur       | CE (unnormalized) (%): 84.91
+[0.8771, 0.8771, 0.8849, 0.7968, 0.8095]
+Distortion: motion_blur      | CE (unnormalized) (%): 93.16
+[0.9565, 0.9439, 0.9247, 0.9251, 0.9077]
+Distortion: zoom_blur        | CE (unnormalized) (%): 94.15
+[0.953, 0.9512, 0.9443, 0.9378, 0.9214]
+Distortion: snow             | CE (unnormalized) (%): 92.55
+[0.9546, 0.9321, 0.9305, 0.9095, 0.901]
+Distortion: frost            | CE (unnormalized) (%): 93.06
+[0.9572, 0.943, 0.9266, 0.9236, 0.9026]
+Distortion: fog              | CE (unnormalized) (%): 93.11
+[0.9635, 0.9593, 0.9488, 0.9337, 0.8504]
+Distortion: brightness       | CE (unnormalized) (%): 95.83
+[0.9654, 0.9634, 0.9611, 0.957, 0.9447]
+Distortion: contrast         | CE (unnormalized) (%): 90.01
+[0.9633, 0.9536, 0.9432, 0.915, 0.7252]
+Distortion: elastic_transform  | CE (unnormalized) (%): 92.17
+[0.9445, 0.9473, 0.9418, 0.9084, 0.8664]
+Distortion: pixelate         | CE (unnormalized) (%): 89.80
+[0.9579, 0.9481, 0.9404, 0.8795, 0.764]
+Distortion: jpeg_compression  | CE (unnormalized) (%): 90.92
+[0.9358, 0.9159, 0.9101, 0.9036, 0.8805]
+Distortion: gaussian_blur    | CE (unnormalized) (%): 94.48
+[0.964, 0.9587, 0.9522, 0.9407, 0.9086]
+Distortion: saturate         | CE (unnormalized) (%): 94.10
+[0.9469, 0.9171, 0.9617, 0.9474, 0.932]
+Distortion: spatter          | CE (unnormalized) (%): 94.74
+[0.9621, 0.9515, 0.9333, 0.9508, 0.9391]

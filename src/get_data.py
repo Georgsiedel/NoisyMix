@@ -13,9 +13,8 @@ IMAGENET_TRAIN_FOLDER = '/scratch/data/imagenet12/train'
 IMAGENET_TEST_FOLDER = '/scratch/data/imagenet12/val'
 
 # download from https://zenodo.org/record/2535967/files/CIFAR-10-C.tar?download=1
-CIFAR10C_FOLDER = '/kaggle/input/corrupt-data/CIFAR-10-C/'
-CIFAR100C_FOLDER = '/kaggle/input/cifar100c/CIFAR-100-C'
-
+CIFAR10C_FOLDER = 'data/cifar10c/'
+CIFAR100C_FOLDER = 'data/cifar100c/'
 
 NOISE_TYPES = [
     "gaussian_noise",
@@ -103,6 +102,7 @@ class CIFARCorrupt(VisionDataset):
 def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_path=None, severity=0, noise='fog'):
 
     if name == 'cifar10':
+        print(os.getcwd())
         #mean = [x / 255 for x in [125.3, 123.0, 113.9]]
         #std = [x / 255 for x in [63.0, 62.1, 66.7]]
         mean = [0.5] * 3

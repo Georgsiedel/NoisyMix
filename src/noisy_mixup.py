@@ -85,8 +85,7 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
                 
                 mean = [-1.0] * 3
                 std = [2.0] * 3
-                normalize = transforms.Normalize(mean, std)
-                x = normalize(x)
+                x[kk:kk+q] = normalize_batch(x[kk:kk+q], mean, std)
 
                 x[kk:kk+q] = p_corruption.apply_lp_corruption(x[kk:kk+q], 
                         minibatchsize=8, 
@@ -96,10 +95,11 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
                         noise_patch_scale=[list(p_corruption.noise_patch_scale.values())[0], list(p_corruption.noise_patch_scale.values())[1]],
                         random_noise_dist=p_corruption.random_noise_dist,
                         factor = i)
+                
                 mean = [0.5] * 3
                 std = [0.5] * 3
-                normalize = transforms.Normalize(mean, std)
-                x = normalize(x)
+                x[kk:kk+q] = normalize_batch(x[kk:kk+q], mean, std)
+                
             else:
                 x[kk:kk+q] = _noise(x[kk:kk+q], add_noise_level=add_noise_level*i, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
             kk += q

@@ -161,8 +161,6 @@ def evaluate(folder, dataset, save_dir):
         
     return results
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("MegaMix")
     parser.add_argument("--dir", type=str, default='cifar10_models/', required=False, help='model dir')

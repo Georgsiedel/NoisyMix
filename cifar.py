@@ -23,7 +23,7 @@ from src.tools import get_lr
 from aug_utils import *
 
 parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
+parser.add_argument('--dataset', type=str, default='cifar100', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
 parser.add_argument('--arch', '-m', type=str, default='wideresnet28',
     choices=['preactresnet18', 'preactwideresnet18', 'wideresnet28'], help='Choose architecture.')
 parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 0)')
@@ -223,15 +223,14 @@ def main():
       resume = True
       if resume:
           DESTINATION_PATH = args.dataset + '_models/'
-          OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+          OUT_DIR = os.path.join(DESTINATION_PATH, f'last_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
           checkpoint = torch.load(OUT_DIR+'.pt')
           
           net.load_state_dict(checkpoint['net_state_dict'])
           optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
           scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
           start_epoch = checkpoint['epoch'] + 1
-          print(f'resuming from epoch {start_epoch}.')
-    
+          print(f'resuming from epoch {start_epoch}.')    
     
       best_acc = 0
       
@@ -242,31 +241,26 @@ def main():
             
                 is_best = test_acc > best_acc
                 best_acc = max(test_acc, best_acc)
-            
-                if is_best:
-                  DESTINATION_PATH = args.dataset + '_models/'
-                  OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
-                  if not os.path.isdir(DESTINATION_PATH):
+
+                DESTINATION_PATH = args.dataset + '_models/'
+                OUT_DIR = os.path.join(DESTINATION_PATH, f'last_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+                if not os.path.isdir(DESTINATION_PATH):
                             os.mkdir(DESTINATION_PATH)
-                  torch.save({
+                torch.save({
                         'epoch': epoch,
                         'net_state_dict': net.state_dict(),
                         'optimizer_state_dict': optimizer.state_dict(),
                         'scheduler_state_dict': scheduler.state_dict(),
                     }, OUT_DIR+'.pt')
-                  #torch.save(net, OUT_DIR+'.pt')            
+                
+                if is_best:
+                  OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+                  torch.save(net, OUT_DIR+'.pt')            
             
                 print(
                     'Epoch {0:3d} | Train Loss {1:.4f} |'
                     ' Test Accuracy {2:.2f}'
                     .format((epoch + 1), train_loss_ema, 100. * test_acc))    
-                
-      DESTINATION_PATH = args.dataset + '_models/'
-      OUT_DIR = os.path.join(DESTINATION_PATH, f'final_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
-      if not os.path.isdir(DESTINATION_PATH):
-                os.mkdir(DESTINATION_PATH)
-      torch.save(net, OUT_DIR+'.pt')
-
 
 if __name__ == '__main__':
   main()
