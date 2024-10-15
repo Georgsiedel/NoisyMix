@@ -139,7 +139,7 @@ def evaluate(folder, dataset, save_dir):
             
             temp_results = []
             for severity in SEVERITIES:
-                _, test_loader = getData(name=datasetc, train_bs=128, test_bs=1024, severity=severity, noise=noise)
+                _, test_loader = getData(name=datasetc, train_bs=128, test_bs=1000, severity=severity, noise=noise)
                 result_m = cls_validate(test_loader, model)
                 results[m][noise][severity] = result_m
                 rob_test_acc.append(result_m)

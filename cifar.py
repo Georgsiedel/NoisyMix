@@ -220,7 +220,7 @@ def main():
               1,  # lr_lambda computes multiplicative factor
               1e-6 / args.learning_rate))
       
-      resume = False
+      resume = True
       if resume:
           DESTINATION_PATH = args.dataset + '_models/'
           OUT_DIR = os.path.join(DESTINATION_PATH, f'last_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')

@@ -17,18 +17,18 @@ CIFAR10C_FOLDER = 'data/cifar10c/'
 CIFAR100C_FOLDER = 'data/cifar100c/'
 
 NOISE_TYPES = [
-    "gaussian_noise",
-    "shot_noise",
-    "impulse_noise",
+    #"gaussian_noise",
+    #"shot_noise",
+    #"impulse_noise",
     
-    "speckle_noise",
+    #"speckle_noise",
     
-    "defocus_blur",
-    "glass_blur",    
-    "motion_blur",
-    "zoom_blur",
+    #"defocus_blur",
+    #"glass_blur",    
+    #"motion_blur",
+    #"zoom_blur",
 
-    "snow",
+    #"snow",
     "frost",
     "fog",
     "brightness",
