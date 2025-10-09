@@ -135,3 +135,6 @@ cifar100_models/
 #results
 eval_results/
 results.txt
+
+#docker-compose
+docker-compose.yml

@@ -213,9 +213,12 @@ def main():
       # Distribute model across all visible GPUs
       net = torch.nn.DataParallel(net).cuda()
       #cudnn.benchmark = True
+
+      folder_name = f'{args.dataset}_models/'
+      DESTINATION_PATH = os.path.join('..', 'trained_models', 'NoisyMix', folder_name)
                         
       if args.resume == 1:
-        DESTINATION_PATH = args.dataset + '_models/'
+        
         OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
 
         # Load the checkpoint
@@ -247,7 +250,6 @@ def main():
                 best_acc = max(test_acc, best_acc)
             
                 if is_best:
-                  DESTINATION_PATH = args.dataset + '_models/'
                   OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
                   if not os.path.isdir(DESTINATION_PATH):
                             os.mkdir(DESTINATION_PATH)
