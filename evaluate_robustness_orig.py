@@ -119,13 +119,8 @@ def evaluate(folder, dataset, save_dir):
     _, test_loader_clean = getData(name=dataset, train_bs=128, test_bs=1024)
 
     for index, m in enumerate(models):
-        checkpoint = torch.load(folder + m, map_location='cuda', weights_only=False)
+        checkpoint = torch.load(folder + m, weights_only=False)
         model = checkpoint['model'].cuda()
-
-        torch.save({
-                        'model': model.state_dict(),  # Save model state dict
-                    }, folder + m + '.pth')
-
         print(m)
         model.eval()
         
@@ -160,6 +155,7 @@ def evaluate(folder, dataset, save_dir):
 
         print('***')
         print('Average Robust Accuracy: ', np.mean(rob_test_acc))
+        print('Average Robust Accuracy: ', np.mean(rob_test_acc[0:15]))
         print('ECE (%): {:.2f}'.format(np.mean(ece)* 100))
         print('***')
         

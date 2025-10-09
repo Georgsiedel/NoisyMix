@@ -11,5 +11,5 @@ tqdm
 seaborn
 jupyter
 cox
-sklearn
+scikit-learn
 pillow

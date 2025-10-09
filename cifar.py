@@ -12,7 +12,6 @@ import numpy as np
 
 from src.cifar_models import preactwideresnet18, preactresnet18, wideresnet28
 
-
 import torch
 import torch.nn.functional as F
 from torchvision import datasets
@@ -23,13 +22,14 @@ from src.tools import get_lr
 from aug_utils import *
 
 parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
-parser.add_argument('--arch', '-m', type=str, default='preactresnet18',
+parser.add_argument('--dataset', type=str, default='cifar100', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
+parser.add_argument('--arch', '-m', type=str, default='wideresnet28',
     choices=['preactresnet18', 'preactwideresnet18', 'wideresnet28'], help='Choose architecture.')
-parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 0)')
+parser.add_argument('--seed', type=int, default=0, metavar='S', help='random seed (default: 0)')
+parser.add_argument('--resume', type=int, default=0, metavar='S', help='resume if 1')
 
 # Optimization options
-parser.add_argument('--epochs', '-e', type=int, default=200, help='Number of epochs to train.')
+parser.add_argument('--epochs', '-e', type=int, default=600, help='Number of epochs to train.')
 parser.add_argument('--learning-rate', '-lr', type=float, default=0.1, help='Initial learning rate.')
 parser.add_argument('--train-batch-size', type=int, default=128, help='Batch size.')
 parser.add_argument('--test-batch-size', type=int, default=1000)
@@ -46,11 +46,11 @@ parser.add_argument('--jsd', type=int, default=1, metavar='S', help='JSD consist
 parser.add_argument('--all-ops', '-all', action='store_true', help='Turn on all operations (+brightness,contrast,color,sharpness).')
 
 # Noisy Feature Mixup options
-parser.add_argument('--alpha', type=float, default=0.0, metavar='S', help='for mixup')
-parser.add_argument('--manifold_mixup', type=int, default=0, metavar='S', help='manifold mixup (default: 0)')
-parser.add_argument('--add_noise_level', type=float, default=0.0, metavar='S', help='level of additive noise')
-parser.add_argument('--mult_noise_level', type=float, default=0.0, metavar='S', help='level of multiplicative noise')
-parser.add_argument('--sparse_level', type=float, default=0.0, metavar='S', help='sparse noise')
+parser.add_argument('--alpha', type=float, default=1.0, metavar='S', help='for mixup')
+parser.add_argument('--manifold_mixup', type=int, default=1, metavar='S', help='manifold mixup (default: 0)')
+parser.add_argument('--add_noise_level', type=float, default=0.5, metavar='S', help='level of additive noise')
+parser.add_argument('--mult_noise_level', type=float, default=0.5, metavar='S', help='level of multiplicative noise')
+parser.add_argument('--sparse_level', type=float, default=0.65, metavar='S', help='sparse noise')
 
 args = parser.parse_args()
 
@@ -148,6 +148,7 @@ def main():
       np.random.seed(args.seed)
       torch.cuda.manual_seed(args.seed)
       torch.cuda.manual_seed_all(args.seed)
+      print(args.dataset, args.seed)
     
       # Load datasets
       train_transform = transforms.Compose(
@@ -169,15 +170,15 @@ def main():
 
       if args.dataset == 'cifar10':
         train_data = datasets.CIFAR10(
-            './data/cifar', train=True, transform=train_transform, download=True)
+            '../data', train=True, transform=train_transform, download=True)
         test_data = datasets.CIFAR10(
-            './data/cifar', train=False, transform=test_transform, download=True)
+            '../data', train=False, transform=test_transform, download=True)
         num_classes = 10
       else:
         train_data = datasets.CIFAR100(
-            './data/cifar', train=True, transform=train_transform, download=True)
+            '../data', train=True, transform=train_transform, download=True)
         test_data = datasets.CIFAR100(
-            './data/cifar', train=False, transform=test_transform, download=True)
+            '../data', train=False, transform=test_transform, download=True)
         num_classes = 100
     
       if args.augmix == 1:
@@ -202,19 +203,38 @@ def main():
       optimizer = torch.optim.SGD(net.parameters(),
           args.learning_rate, momentum=args.momentum,
           weight_decay=args.decay, nesterov=True)
+      scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer,
+            lr_lambda=lambda step: get_lr(  # pylint: disable=g-long-lambda
+                step, args.epochs * len(train_loader),
+                1,  # lr_lambda computes multiplicative factor
+                1e-6 / args.learning_rate))
     
       # Distribute model across all visible GPUs
       net = torch.nn.DataParallel(net).cuda()
       #cudnn.benchmark = True
-    
-      start_epoch = 0
-    
-      scheduler = torch.optim.lr_scheduler.LambdaLR(
-          optimizer,
-          lr_lambda=lambda step: get_lr(  # pylint: disable=g-long-lambda
-              step, args.epochs * len(train_loader),
-              1,  # lr_lambda computes multiplicative factor
-              1e-6 / args.learning_rate))
+                        
+      if args.resume == 1:
+        DESTINATION_PATH = args.dataset + '_models/'
+        OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+
+        # Load the checkpoint
+        checkpoint = torch.load(OUT_DIR + '.pt', map_location='cuda', weights_only=False)
+        
+        # Load the model state dict
+        net = checkpoint['model'].cuda()
+        
+        # Load optimizer, scheduler, and epoch
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+
+        scheduler._step_count = start_epoch * len(train_loader)
+        
+        print(f"Checkpoint loaded successfully. Resuming from epoch {start_epoch}.")
+
+      else:
+        start_epoch = 0
     
       best_acc = 0
       
@@ -231,7 +251,12 @@ def main():
                   OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
                   if not os.path.isdir(DESTINATION_PATH):
                             os.mkdir(DESTINATION_PATH)
-                  torch.save(net, OUT_DIR+'.pt')            
+                  torch.save({
+                                'model': net,  # Save model state dict
+                                'optimizer_state_dict': optimizer.state_dict(),  # Save optimizer
+                                'scheduler_state_dict': scheduler.state_dict(),  # Save scheduler
+                                'epoch': epoch  # Save epoch
+                            }, OUT_DIR + '.pt')            
             
                 print(
                     'Epoch {0:3d} | Train Loss {1:.4f} |'
@@ -242,7 +267,13 @@ def main():
       OUT_DIR = os.path.join(DESTINATION_PATH, f'final_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
       if not os.path.isdir(DESTINATION_PATH):
                 os.mkdir(DESTINATION_PATH)
-      torch.save(net, OUT_DIR+'.pt')
+      torch.save({
+                    'model': net,  # Save model state dict
+                    'optimizer_state_dict': optimizer.state_dict(),  # Save optimizer
+                    'scheduler_state_dict': scheduler.state_dict(),  # Save scheduler
+                    'epoch': epoch  # Save epoch
+                }, OUT_DIR + '.pt')
+
 
 
 if __name__ == '__main__':

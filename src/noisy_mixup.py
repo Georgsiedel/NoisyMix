@@ -7,13 +7,13 @@ def _noise(x, add_noise_level=0.0, mult_noise_level=0.0, sparse_level=0.0):
     with torch.cuda.device(0):
         if add_noise_level > 0.0:
             var = torch.var(x)**0.5
-            add_noise = add_noise_level * np.random.beta(2, 5) * torch.cuda.FloatTensor(x.shape).normal_()
+            add_noise = add_noise_level * np.random.beta(2, 5) * torch.empty(x.shape, device='cuda').normal_()
             #torch.clamp(add_noise, min=-(2*var), max=(2*var), out=add_noise) # clamp
-            sparse = torch.cuda.FloatTensor(x.shape).uniform_()
+            sparse = torch.empty(x.shape, device='cuda').uniform_()
             add_noise[sparse<sparse_level] = 0
         if mult_noise_level > 0.0:
-            mult_noise = mult_noise_level * np.random.beta(2, 5) * (2*torch.cuda.FloatTensor(x.shape).uniform_()-1) + 1 
-            sparse = torch.cuda.FloatTensor(x.shape).uniform_()
+            mult_noise = mult_noise_level * np.random.beta(2, 5) * (2*torch.empty(x.shape, device='cuda').uniform_()-1) + 1 
+            sparse = torch.empty(x.shape, device='cuda').uniform_()
             mult_noise[sparse<sparse_level] = 1.0
 
             
@@ -28,7 +28,7 @@ def do_noisy_mixup(x, y, jsd=0, alpha=0.0, add_noise_level=0.0, mult_noise_level
         x = _noise(x, add_noise_level=add_noise_level, mult_noise_level=mult_noise_level, sparse_level=sparse_level)
     else:
         kk = 0
-        q = np.int(x.shape[0]/3)
+        q = int(x.shape[0]/3)
         index = torch.randperm(q).cuda()
     
         for i in range(1,4):

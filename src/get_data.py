@@ -13,8 +13,8 @@ IMAGENET_TRAIN_FOLDER = '/scratch/data/imagenet12/train'
 IMAGENET_TEST_FOLDER = '/scratch/data/imagenet12/val'
 
 # download from https://zenodo.org/record/2535967/files/CIFAR-10-C.tar?download=1
-CIFAR10C_FOLDER = 'data/CIFAR-10-C/'
-CIFAR100C_FOLDER = 'data/CIFAR-100-C/'
+CIFAR10C_FOLDER = '../data/CIFAR10-c/'
+CIFAR100C_FOLDER = '../data/CIFAR100-c/'
 
 
 NOISE_TYPES = [
@@ -22,7 +22,7 @@ NOISE_TYPES = [
     "shot_noise",
     "impulse_noise",
     
-    #"speckle_noise",
+    "speckle_noise",
     
     "defocus_blur",
     "glass_blur",    
@@ -39,9 +39,9 @@ NOISE_TYPES = [
     "pixelate",
     "jpeg_compression",
     
-    #"gaussian_blur",
-    #"saturate",
-    #"spatter",
+    "gaussian_blur",
+    "saturate",
+    "spatter",
 ]
 
 
@@ -52,7 +52,7 @@ SEVERITIES = [1, 2, 3, 4, 5]
 class CIFARCorrupt(VisionDataset):
 
     def __init__(self,
-                 root="data/CIFAR-10-C",
+                 root="..data/CIFAR10-c",
                  severity=[1, 2, 3, 4, 5],
                  noise=None,
                  transform=None,
@@ -120,14 +120,14 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
             transforms.Normalize(mean, std),
         ])
 
-        trainset = datasets.CIFAR10(root='../cifar10', train=True, download=True, transform=transform_train)
+        trainset = datasets.CIFAR10(root='../data', train=True, download=True, transform=transform_train)
         train_loader = torch.utils.data.DataLoader(trainset,
                                                    batch_size=train_bs,
                                                    shuffle=True,
                                                    num_workers=4,
                                                    pin_memory=True)
 
-        testset = datasets.CIFAR10(root='../cifar10', train=False, download=False, transform=transform_test)
+        testset = datasets.CIFAR10(root='../data', train=False, download=False, transform=transform_test)
         test_loader = torch.utils.data.DataLoader(testset,
                                                   batch_size=test_bs,
                                                   shuffle=False,
@@ -154,14 +154,14 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
             transforms.Normalize(mean, std),
         ])
 
-        trainset = datasets.CIFAR100(root='../cifar100', train=True, download=True, transform=transform_train)
+        trainset = datasets.CIFAR100(root='../data', train=True, download=True, transform=transform_train)
         train_loader = torch.utils.data.DataLoader(trainset,
                                                    batch_size=train_bs,
                                                    shuffle=True,
                                                    num_workers=4,
                                                    pin_memory=True)
 
-        testset = datasets.CIFAR100(root='../cifar100', train=False, download=False, transform=transform_test)
+        testset = datasets.CIFAR100(root='../data', train=False, download=False, transform=transform_test)
         test_loader = torch.utils.data.DataLoader(testset,
                                                   batch_size=test_bs,
                                                   shuffle=False,
