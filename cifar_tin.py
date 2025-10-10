@@ -179,6 +179,7 @@ def main():
             '../data', train=False, transform=test_transform, download=True)
         num_classes = 10
         factor = 1
+        image_size = 32
       elif args.dataset == 'cifar100':
         train_data = datasets.CIFAR100(
             '../data', train=True, transform=train_transform, download=True)
@@ -186,6 +187,7 @@ def main():
             '../data', train=False, transform=test_transform, download=True)
         num_classes = 100
         factor = 1
+        image_size = 32
       elif args.dataset == 'tin':
         train_data = datasets.ImageFolder(
             '../data/TinyImageNet/train', transform=train_transform)
@@ -193,11 +195,12 @@ def main():
             '../data/TinyImageNet/val', transform=test_transform)
         num_classes = 200
         factor = 2
+        image_size = 64
       else:
         raise Exception('Unknown dataset')  
     
       if args.augmix == 1:
-          train_data = AugMixDataset(train_data, preprocess, args.jsd, args)
+          train_data = AugMixDataset(train_data, preprocess, args.jsd, image_size, args)
       
       train_loader = torch.utils.data.DataLoader(
               train_data, batch_size=args.train_batch_size,

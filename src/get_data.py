@@ -287,7 +287,7 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
 
         train_loader = None
       
-        testset = datasets.ImageFolder(root=f'TINC_FOLDER{noise}/{severity}', transform=transform_test)
+        testset = datasets.ImageFolder(root=f'{TINC_FOLDER}{noise}/{severity}', transform=transform_test)
         test_loader = torch.utils.data.DataLoader(testset,
                                                   batch_size=test_bs,
                                                   shuffle=False,

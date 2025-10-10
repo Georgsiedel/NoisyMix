@@ -173,9 +173,6 @@ def main():
     torch.cuda.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
       
-    augmentations.IMAGE_SIZE=224
-
-      
     # Load datasets
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
@@ -198,7 +195,7 @@ def main():
         num_classes = 1000
     
     if args.augmix == 1:
-        train_data = AugMixDataset(train_data, preprocess, args.jsd, args)
+        train_data = AugMixDataset(train_data, preprocess, args.jsd, 224, args)
       
     train_loader = torch.utils.data.DataLoader(
             train_data, batch_size=args.train_batch_size,
