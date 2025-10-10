@@ -57,7 +57,7 @@ args = parser.parse_args()
 def train(net, train_loader, optimizer, scheduler):
   """Train for one epoch."""
   net.train()
-  loss_ema = 0.
+  loss = 0.
   
   criterion = torch.nn.CrossEntropyLoss().cuda()
   
@@ -122,8 +122,8 @@ def train(net, train_loader, optimizer, scheduler):
     loss.backward()
     optimizer.step()
     scheduler.step()
-    loss_ema = loss_ema * 0.9 + float(loss) * 0.1
-  return loss_ema     
+    
+  return loss     
 
 
 def test(net, test_loader):
@@ -258,7 +258,7 @@ def main():
       
       for epoch in range(start_epoch, args.epochs):
             
-                train_loss_ema = train(net, train_loader, optimizer, scheduler)
+                train_loss = train(net, train_loader, optimizer, scheduler)
                 test_loss, test_acc = test(net, test_loader)
             
                 is_best = test_acc > best_acc
@@ -278,7 +278,7 @@ def main():
                 print(
                     'Epoch {0:3d} | Train Loss {1:.4f} |'
                     ' Test Accuracy {2:.2f}'
-                    .format((epoch + 1), train_loss_ema, 100. * test_acc))    
+                    .format((epoch + 1), train_loss, 100. * test_acc))    
                 
       DESTINATION_PATH = args.dataset + '_models/'
       OUT_DIR = os.path.join(DESTINATION_PATH, f'final_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')

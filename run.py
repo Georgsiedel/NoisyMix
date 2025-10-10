@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # Calculate accuracy and robust accuracy, evaluating each trained network on each corruption
 
     print('Beginning metric evaluation')
-    os.system(f"python evaluate_robustness_orig.py --dataset=cifar10 --dir=../data/NoisyMix/cifar10_models/")
-    os.system(f"python evaluate_robustness_orig.py --dataset=cifar100 --dir=../data/NoisyMix/cifar100_models/")
+    os.system(f"python evaluate_robustness.py --dataset=cifar10 --dir=../data/NoisyMix/cifar10_models/")
+    os.system(f"python evaluate_robustness.py --dataset=cifar100 --dir=../data/NoisyMix/cifar100_models/")
     
             
