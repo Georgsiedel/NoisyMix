@@ -15,7 +15,7 @@ IMAGENET_TEST_FOLDER = '/scratch/data/imagenet12/val'
 # download from https://zenodo.org/record/2535967/files/CIFAR-10-C.tar?download=1
 CIFAR10C_FOLDER = '../data/CIFAR10-c/'
 CIFAR100C_FOLDER = '../data/CIFAR100-c/'
-
+TINC_FOLDER = '../data/TinyImageNet-c/'
 
 NOISE_TYPES = [
     "gaussian_noise",
@@ -168,6 +168,38 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
                                                   num_workers=4,
                                                   pin_memory=True)
 
+    elif name == 'tin':
+
+        # TinyImageNet, 64x64 images
+        mean = [0.5] * 3
+        std = [0.5] * 3
+
+        transform_train = transforms.Compose([
+            transforms.RandomCrop(64, padding=8),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std),
+        ])
+
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std),
+        ])
+        
+        train_set = ImageFolder(root='../data/TinyImageNet/train', transform=transform_train)
+        train_loader = torch.utils.data.DataLoader(train_set,
+                                                   batch_size=train_bs,
+                                                   shuffle=True,
+                                                   pin_memory=True,
+                                                   num_workers=4)
+
+        test_set = ImageFolder(root='../data/TinyImageNet/val', transform=transform_test)
+        test_loader = torch.utils.data.DataLoader(test_set,
+                                                  batch_size=test_bs,
+                                                  shuffle=False,
+                                                  pin_memory=True,
+                                                  num_workers=4)
+
     elif name == 'imagenet':
         mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
 
@@ -237,6 +269,25 @@ def getData(name='cifar10', train_bs=128, test_bs=512, train_path=None, test_pat
                                           noise=[noise],
                                           transform=transform_test)
         
+        test_loader = torch.utils.data.DataLoader(testset,
+                                                  batch_size=test_bs,
+                                                  shuffle=False,
+                                                  num_workers=4,
+                                                  pin_memory=True)
+        
+    elif name == 'tinc':
+        
+        mean = [0.5] * 3
+        std = [0.5] * 3
+
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std),
+        ])
+
+        train_loader = None
+      
+        testset = datasets.ImageFolder(root=f'TINC_FOLDER{noise}/{severity}', transform=transform_test)
         test_loader = torch.utils.data.DataLoader(testset,
                                                   batch_size=test_bs,
                                                   shuffle=False,

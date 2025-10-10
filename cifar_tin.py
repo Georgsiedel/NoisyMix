@@ -22,7 +22,7 @@ from src.tools import get_lr
 from aug_utils import *
 
 parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--dataset', type=str, default='cifar100', choices=['cifar10', 'cifar100'], help='Choose between CIFAR-10, CIFAR-100.')
+parser.add_argument('--dataset', type=str, default='cifar100', choices=['cifar10', 'cifar100', 'tin'], help='Choose between CIFAR-10, CIFAR-100, TinyImageNet.')
 parser.add_argument('--arch', '-m', type=str, default='wideresnet28',
     choices=['preactresnet18', 'preactwideresnet18', 'wideresnet28'], help='Choose architecture.')
 parser.add_argument('--seed', type=int, default=0, metavar='S', help='random seed (default: 0)')
@@ -148,12 +148,16 @@ def main():
       np.random.seed(args.seed)
       torch.cuda.manual_seed(args.seed)
       torch.cuda.manual_seed_all(args.seed)
-      print(args.dataset, args.seed)
+
+      if args.dataset == 'tin':
+        crop = transforms.RandomCrop(64, padding=8)
+      else:
+        crop = transforms.RandomCrop(32, padding=4)
     
       # Load datasets
       train_transform = transforms.Compose(
           [transforms.RandomHorizontalFlip(),
-           transforms.RandomCrop(32, padding=4)])
+           crop])
       preprocess = transforms.Compose(
           [transforms.ToTensor(),
            transforms.Normalize([0.5] * 3, [0.5] * 3)])
@@ -162,7 +166,7 @@ def main():
       if args.augmix == 0:
           train_transform = transforms.Compose(
               [transforms.RandomHorizontalFlip(),
-               transforms.RandomCrop(32, padding=4),
+               crop,
                transforms.ToTensor(),
                transforms.Normalize([0.5] * 3, [0.5] * 3),
                ])
@@ -174,12 +178,23 @@ def main():
         test_data = datasets.CIFAR10(
             '../data', train=False, transform=test_transform, download=True)
         num_classes = 10
-      else:
+        factor = 1
+      elif args.dataset == 'cifar100':
         train_data = datasets.CIFAR100(
             '../data', train=True, transform=train_transform, download=True)
         test_data = datasets.CIFAR100(
             '../data', train=False, transform=test_transform, download=True)
         num_classes = 100
+        factor = 1
+      elif args.dataset == 'tin':
+        train_data = datasets.ImageFolder(
+            '../data/TinyImageNet/train', transform=train_transform)
+        test_data = datasets.ImageFolder(
+            '../data/TinyImageNet/val', transform=test_transform)
+        num_classes = 200
+        factor = 2
+      else:
+        raise Exception('Unknown dataset')  
     
       if args.augmix == 1:
           train_data = AugMixDataset(train_data, preprocess, args.jsd, args)
@@ -194,11 +209,11 @@ def main():
     
       # Create model
       if args.arch == 'preactresnet18':
-        net = preactresnet18(num_classes=num_classes)
+        net = preactresnet18(num_classes=num_classes, factor = factor)
       elif args.arch == 'preactwideresnet18':
-        net = preactwideresnet18(num_classes=num_classes)
+        net = preactwideresnet18(num_classes=num_classes, factor = factor)
       elif args.arch == 'wideresnet28':
-          net = wideresnet28(num_classes=num_classes)
+          net = wideresnet28(num_classes=num_classes, factor = factor)
     
       optimizer = torch.optim.SGD(net.parameters(),
           args.learning_rate, momentum=args.momentum,

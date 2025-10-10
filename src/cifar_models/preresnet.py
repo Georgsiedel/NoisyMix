@@ -58,14 +58,14 @@ class PreActBottleneck(nn.Module):
         return out
 
 class PreActResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, width=1):
+    def __init__(self, block, num_blocks, num_classes=10, width=1, factor=1): #for TINs 64x64 images, set factor=2, use stride on first block
         super(PreActResNet, self).__init__()
         
         widths = [int(w * width) for w in [64, 128, 256, 512]]
         
         self.in_planes = widths[0]
         self.conv1 = nn.Conv2d(3, self.in_planes, kernel_size=3, stride=1, padding=1, bias=False)
-        self.layer1 = self._make_layer(block, widths[0], num_blocks[0], stride=1)
+        self.layer1 = self._make_layer(block, widths[0], num_blocks[0], stride=factor)
         self.layer2 = self._make_layer(block, widths[1], num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, widths[2], num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, widths[3], num_blocks[3], stride=2)
