@@ -237,7 +237,7 @@ def main():
                         
       if args.resume == 1:
         
-        OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+        OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}_epochs_{args.epochs}')
 
         # Load the checkpoint
         checkpoint = torch.load(OUT_DIR + '.pt', map_location='cuda', weights_only=False)
@@ -268,7 +268,7 @@ def main():
                 best_acc = max(test_acc, best_acc)
             
                 if is_best:
-                  OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+                  OUT_DIR = os.path.join(DESTINATION_PATH, f'best_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}_epochs_{args.epochs}')
                   if not os.path.isdir(DESTINATION_PATH):
                             os.mkdir(DESTINATION_PATH)
                   torch.save({
@@ -283,8 +283,7 @@ def main():
                     ' Test Accuracy {2:.2f}'
                     .format((epoch + 1), train_loss, 100. * test_acc))    
                 
-      DESTINATION_PATH = args.dataset + '_models/'
-      OUT_DIR = os.path.join(DESTINATION_PATH, f'final_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}')
+      OUT_DIR = os.path.join(DESTINATION_PATH, f'final_arch_{args.arch}_augmix_{args.augmix}_jsd_{args.jsd}_alpha_{args.alpha}_manimixup_{args.manifold_mixup}_addn_{args.add_noise_level}_multn_{args.mult_noise_level}_seed_{args.seed}_epochs_{args.epochs}')
       if not os.path.isdir(DESTINATION_PATH):
                 os.mkdir(DESTINATION_PATH)
       torch.save({
