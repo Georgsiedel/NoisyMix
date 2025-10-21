@@ -154,8 +154,8 @@ def evaluate(folder, dataset, save_dir):
             np.save(f, result_m)
 
         print('***')
-        print('Average Robust Accuracy: ', np.mean(rob_test_acc))
-        print('Average Robust Accuracy: ', np.mean(rob_test_acc[0:15]))
+        print('Average Robust Accuracy (19): ', np.mean(rob_test_acc))
+        print('Average Robust Accuracy (15): ', np.mean(rob_test_acc[0:75]))
         print('ECE (%): {:.2f}'.format(np.mean(ece)* 100))
         print('***')
         
