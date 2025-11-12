@@ -1,3 +1,9 @@
+## Purpose of Fork
+
+- Added TinyImageNet dataset, including the addition of a stride factor to adapt the ResNet architecture to 64x64 pixel images
+- added Dockerfile, requirements, run.py automation for several consecutive experiments
+- minor changes to deprecated methods
+
 ## *NoisyMix*: Boosting Model Robustness and Accuracy
 
 It is well-known that deep learning models are typically [brittle to input perturbations](https://arxiv.org/abs/1312.6199), limiting their applicability in many real-world problems. Four common methods to improve model robustness to input perturbations are:
